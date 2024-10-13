@@ -11,59 +11,66 @@ import { getInfo } from "../../store/slices/user/user.slice";
 import { useAppDispatch } from "../../store/store";
 
 type TProps = {
-   children: ReactNode;
-   title?: string;
-   meta?: ReactNode;
-   protect?: boolean;
+    children: ReactNode;
+    title?: string;
+    meta?: ReactNode;
+    protect?: boolean;
 };
 
 let idToast: number | string | undefined = undefined;
 
-export default function RootPage({ children, title = "", meta, protect = false }: TProps) {
-   const dispatch = useAppDispatch();
-   const { id } = useParams();
-   const isRoute = useCheckRoute([ROUTER.LOGIN, ROUTER.REGISTER]);
-   const location = useLocation();
+export default function RootPage({
+    children,
+    title = "",
+    meta,
+    protect = false,
+}: TProps) {
+    const dispatch = useAppDispatch();
+    const { id } = useParams();
+    const isRoute = useCheckRoute([ROUTER.LOGIN, ROUTER.REGISTER]);
+    const location = useLocation();
 
-   const networkStatus = useNetwork();
-   useEffect(() => {
-      if (!networkStatus.online) {
-         idToast = toast.info(`You are offline`, {
-            autoClose: false,
-            position: `bottom-right`,
-            closeOnClick: false,
-         });
-      } else {
-         toast.dismiss(idToast);
-      }
-   }, [networkStatus.online]);
+    const networkStatus = useNetwork();
+    useEffect(() => {
+        if (!networkStatus.online) {
+            idToast = toast.info(`You are offline`, {
+                autoClose: false,
+                position: `bottom-right`,
+                closeOnClick: false,
+            });
+        } else {
+            toast.dismiss(idToast);
+        }
+    }, [networkStatus.online]);
 
-   useEffect(() => {
-      if (protect)  dispatch(getInfo());
-   }, [location]);
+    useEffect(() => {
+        if (protect) dispatch(getInfo());
+    }, [location]);
 
-   const renderContent = () => {
-      if (isRoute) {
-         if (getAccessToken()) {
-            return <Navigate to={`${ROUTER.HOME}`} replace />;
-         }
-      }
+    const renderContent = () => {
+        if (isRoute) {
+            if (getAccessToken()) {
+                return <Navigate to={`${ROUTER.HOME}`} replace />;
+            }
+        }
 
-      if (!protect) return children;
+        if (!protect) return children;
 
-      // if (loadingPage) return <Loader />;
+        // if (loadingPage) return <Loader />;
 
-      return children;
-   };
+        return children;
+    };
 
-   return (
-      <>
-         <Helmet>
-            <title>{`${TITLE_BASE} | ${title} ${id ? "- " + id : ""}`}</title>
-            {meta}
-         </Helmet>
+    return (
+        <>
+            <Helmet>
+                <title>{`${TITLE_BASE} | ${title} ${
+                    id ? "- " + id : ""
+                }`}</title>
+                {meta}
+            </Helmet>
 
-         {renderContent()}
-      </>
-   );
+            {renderContent()}
+        </>
+    );
 }
