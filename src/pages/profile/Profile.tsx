@@ -20,7 +20,6 @@ export function Profile() {
 
    const handleUploadLocal = () => {
       if (file === null) return;
-
       const fromData = new FormData();
 
       fromData.append("avatar", file);
